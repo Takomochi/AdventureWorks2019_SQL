@@ -48,3 +48,53 @@ ORDER BY SUM(SOD.OrderQty * SOD.UnitPrice) DESC;
 	TotalSales - LAG(TotalSales) OVER(PARTITION BY SalesPersonID ORDER BY OrderYear) AS FromPreviousYearSales
   FROM SalesByPerson
   ORDER BY SalesPersonID, OrderYear;
+
+  -- 4. Identify customers who have completed their first order and OrderDate. 
+WITH ORDERS AS 
+(
+SELECT 
+	OrderDate, 
+	CustomerID, 
+	TotalDue, 
+	ShipDate, 
+	ROW_NUMBER() OVER(PARTITION BY CustomerID ORDER BY OrderDate) as OrderNum
+FROM [AdventureWorks2019].[Sales].[SalesOrderHeader] 
+) 
+SELECT 
+	* 
+FROM ORDERS 
+WHERE 1=1
+AND OrderNum = 1;
+
+-- Let's verify! CustomerID = 11001 & OrderDate: 2011-06-21 00:00:00.000
+SELECT 
+	OrderDate, 
+	CustomerID, 
+	TotalDue, 
+	ShipDate, 
+	ROW_NUMBER() OVER(PARTITION BY CustomerID ORDER BY OrderDate ASC) as OrderNum
+FROM [AdventureWorks2019].[Sales].[SalesOrderHeader] 
+WHERE CustomerID = 11001
+ORDER BY OrderDate ASC;
+
+
+-- 5. Employees Eligible for Promotion 
+-- Employees who have been with the company for more than 5 years. 
+SELECT 
+  EMP.BusinessEntityID, 
+  P.FirstName, 
+  P.LastName, 
+  EMP.HireDate,
+  DATEDIFF(year, EMP.HireDate, GETDATE()) AS YearsWithCompany
+FROM 
+   [AdventureWorks2019].[HumanResources].[Employee] AS EMP
+JOIN [AdventureWorks2019].[Person].[Person] AS P 
+  	ON EMP.BusinessEntityID = P.BusinessEntityID
+WHERE 
+  DATEDIFF(year, EMP.HireDate, GETDATE()) > 5;
+
+
+-- 3.  Inactive User Reminder
+--  Identifying Customers with No Recent Purchases to send them a reminder
+
+-- 4. Customers with Multiple Orders in a Month
