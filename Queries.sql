@@ -1,5 +1,3 @@
--- Basic Aggregations
-
 -- 1. Total Sales Amount for each year
 SELECT 
 	YEAR(OrderDate) as YearOfOrder,
@@ -93,8 +91,10 @@ JOIN [AdventureWorks2019].[Person].[Person] AS P
 WHERE 
   DATEDIFF(year, EMP.HireDate, GETDATE()) > 5;
 
-
--- 3.  Inactive User Reminder
---  Identifying Customers with No Recent Purchases to send them a reminder
-
--- 4. Customers with Multiple Orders in a Month
+-- 6. Is there a customer without Order? 
+SELECT 
+	CS.CustomerID
+FROM SALES.SalesOrderHeader AS SOH
+LEFT JOIN SALES.Customer AS CS 
+ON CS.CustomerID = SOH.CustomerID
+WHERE SOH.CustomerID IS NULL;
