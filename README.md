@@ -6,10 +6,6 @@ This project aims to demonstrate basic to advanced SQL queries.
 ## Resource
 Microsoft Sample Database - AdventureWorks2019
 
-## Contents
-1. Aggregations
-2. Situational SQL usecases
-
 ## SQL Questions
 Q1. 1.Total Sales Amount for each year <br>
 ```
@@ -42,7 +38,7 @@ ORDER BY YearOfOrder
 ```
 ![alt text](image-7.png)
 
-Q2. Sales Amount by Product category & Product Subcategory in 2014 <br>
+Q2. Sales Amount by Product Subcategory in 2014 <br>
 ```
 SELECT	
 	PC.Name AS ProductName, 
@@ -60,6 +56,7 @@ AND SOH.OrderDate >= '2014-01-01'
 GROUP BY PC.Name, PSC.Name
 ORDER BY SUM(SOD.OrderQty * SOD.UnitPrice) DESC;
 ```
+It is obvious that the category "Mountain bikes" has the top sales. 
 ![alt text](image-1.png)
 
 Q3. Total Sales Amount By Sales Person for Each Year Also, compare the sales from the previous year. <br>
@@ -108,7 +105,7 @@ AND OrderNum = 1;
 ```
 ![alt text](image-3.png)
 
-Q4. 2. Let's verify! CustomerID = 11001 & OrderDate: 2011-06-21 00:00:00.000
+Q4. 2. Let's verify! CustomerID = 11001 & OrderDate: 2011-06-17
 ```
 SELECT 
 	OrderDate, 
@@ -120,8 +117,10 @@ FROM [AdventureWorks2019].[Sales].[SalesOrderHeader]
 WHERE CustomerID = 11001
 ORDER BY OrderDate ASC;
 ```
+We can see that CustomerID = 11001's first order is 2011-06-17, and the total amount is $3729.364.
 ![alt text](image-4.png)
-Q5. Employees Eligible for Promotion <br>
+
+Q5. Employees who have been with the company more than 5 years <br>
 ```
 SELECT 
   EMP.BusinessEntityID, 
