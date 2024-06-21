@@ -16,7 +16,7 @@ FROM [AdventureWorks2019].[Sales].[SalesOrderHeader]
 GROUP BY YEAR(OrderDate)
 Order by YEAR(OrderDate); 
 ```
-![alt text](image.png)
+![alt text](https://github.com/Takomochi/AdventureWorks2019_SQL/blob/main/images/result_01_01.png?raw=true)
 
 Q1. 2. If we want to see the sales growth of each year, we can use the LAG function and calculate the sales difference from the previous year.
 ```
@@ -36,7 +36,7 @@ SELECT
 FROM TOTAL_SALES_BY_YEAR
 ORDER BY YearOfOrder
 ```
-![alt text](image-7.png)
+![alt text](https://github.com/Takomochi/AdventureWorks2019_SQL/blob/main/images/result_01_02.png?raw=true)
 
 Q2. Sales Amount by Product Subcategory in 2014 <br>
 ```
@@ -57,7 +57,7 @@ GROUP BY PC.Name, PSC.Name
 ORDER BY SUM(SOD.OrderQty * SOD.UnitPrice) DESC;
 ```
 It is obvious that the category "Mountain bikes" has the top sales. 
-![alt text](image-1.png)
+![alt text](https://github.com/Takomochi/AdventureWorks2019_SQL/blob/main/images/result_02.png?raw=true)
 
 Q3. Total Sales Amount By Sales Person for Each Year Also, compare the sales from the previous year. <br>
 ```
@@ -83,7 +83,7 @@ WITH SalesByPerson AS
   FROM SalesByPerson
   ORDER BY SalesPersonID, OrderYear;
 ```
-![alt text](image-2.png)
+![alt text](https://github.com/Takomochi/AdventureWorks2019_SQL/blob/main/images/result_03.png?raw=true)
 
 Q4. 1.Identify customers who have completed their first order and OrderDate <br>
 ```
@@ -103,7 +103,7 @@ FROM ORDERS
 WHERE 1=1
 AND OrderNum = 1;
 ```
-![alt text](image-3.png)
+![alt text](https://github.com/Takomochi/AdventureWorks2019_SQL/blob/main/images/result_04_01.png?raw=true)
 
 Q4. 2. Let's verify! CustomerID = 11001 & OrderDate: 2011-06-17
 ```
@@ -118,7 +118,7 @@ WHERE CustomerID = 11001
 ORDER BY OrderDate ASC;
 ```
 We can see that CustomerID = 11001's first order is 2011-06-17, and the total amount is $3729.364.
-![alt text](image-4.png)
+![alt text](https://github.com/Takomochi/AdventureWorks2019_SQL/blob/main/images/result_04_02.png?raw=true)
 
 Q5. Employees who have been with the company more than 5 years <br>
 ```
@@ -135,7 +135,7 @@ JOIN [AdventureWorks2019].[Person].[Person] AS P
 WHERE 
   DATEDIFF(year, EMP.HireDate, GETDATE()) > 5;
 ```
-![alt text](image-5.png)
+![alt text](https://github.com/Takomochi/AdventureWorks2019_SQL/blob/main/images/result_05.png?raw=true)
 
 Q6. Is there a customer without Order? <br>
 ```
