@@ -146,6 +146,6 @@ LEFT JOIN SALES.Customer AS CS
 ON CS.CustomerID = SOH.CustomerID
 WHERE SOH.CustomerID IS NULL;
 ```
-![alt text](image-6.png)
+![alt text](https://github.com/Takomochi/AdventureWorks2019_SQL/blob/main/images/result_06.png?raw=true)
 
 Nope, there is no customer without an order. 
