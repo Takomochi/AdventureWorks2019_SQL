@@ -11,10 +11,142 @@ Microsoft Sample Database - AdventureWorks2019
 2. Situational SQL usecases
 
 ## SQL Questions
-Q1. Total Sales Amount for each year <br>
-Q2. Sales Amount by Product category & Product Subcategory in 2014 <br>
-Q3. Total Sales Amount By Sales Person for Each Year Also, compare the sales from the previous year. <br>
-Q4. Identify customers who have completed their first order and OrderDate <br>
-Q5. Employees Eligible for Promotion <br>
-Q6. Is there a customer without Order? 
+Q1. 1.Total Sales Amount for each year <br>
+```
+SELECT 
+	YEAR(OrderDate) as YearOfOrder,
+	SUM(SubTotal) as Sales 
+FROM [AdventureWorks2019].[Sales].[SalesOrderHeader]
+GROUP BY YEAR(OrderDate)
+Order by YEAR(OrderDate); 
+```
+![alt text](image.png)
 
+Q1. 2. If we want to see the sales growth of each year, we can use the LAG function and calculate the sales difference from the previous year.
+```
+WITH TOTAL_SALES_BY_YEAR AS 
+(
+SELECT 
+	YEAR(OrderDate) as YearOfOrder,
+	SUM(SubTotal) as Sales 
+FROM [AdventureWorks2019].[Sales].[SalesOrderHeader]
+GROUP BY YEAR(OrderDate)
+) 
+SELECT  
+	YearOfOrder,
+    Sales, 
+	LAG(Sales, 1, 0) OVER(ORDER BY YearOfOrder) as PreviousYearSales, 
+	Sales - LAG(Sales, 1, 0) OVER(ORDER BY YearOfOrder) AS SALES_DIFF
+FROM TOTAL_SALES_BY_YEAR
+ORDER BY YearOfOrder
+```
+![alt text](image-7.png)
+
+Q2. Sales Amount by Product category & Product Subcategory in 2014 <br>
+```
+SELECT	
+	PC.Name AS ProductName, 
+	PSC.Name AS ProductSubCategoryName, 
+	Round(SUM(SOD.OrderQty * SOD.UnitPrice), 2) AS TotalSales
+FROM [AdventureWorks2019].[Sales].[SalesOrderDetail] AS SOD
+JOIN [AdventureWorks2019].[Sales].[SalesOrderHeader] AS SOH
+	ON SOD.SalesOrderID = SOH.SalesOrderID
+JOIN [AdventureWorks2019].[Production].[Product] AS PC
+	ON SOD.ProductID = PC.ProductID 
+JOIN [AdventureWorks2019].[Production].[ProductSubcategory] AS PSC
+	ON PSC.ProductSubcategoryID = PC.ProductSubcategoryID
+WHERE 1=1
+AND SOH.OrderDate >= '2014-01-01'
+GROUP BY PC.Name, PSC.Name
+ORDER BY SUM(SOD.OrderQty * SOD.UnitPrice) DESC;
+```
+![alt text](image-1.png)
+
+Q3. Total Sales Amount By Sales Person for Each Year Also, compare the sales from the previous year. <br>
+```
+WITH SalesByPerson AS 
+  (
+  SELECT 
+    YEAR(SOH.OrderDate) AS OrderYear, 
+	EMP.BusinessEntityID AS SalesPersonID, 
+	CONCAT(P.FirstName, ' ', P.LastName) AS PersonName,
+	SUM(SOH.SubTotal) AS TotalSales
+  FROM [AdventureWorks2019].[Sales].[SalesOrderHeader] AS SOH 
+  JOIN [AdventureWorks2019].[HumanResources].[Employee] AS EMP
+	ON SOH.SalesPersonID = EMP.BusinessEntityID
+  JOIN [AdventureWorks2019].[Person].[Person] AS P 
+	ON P.BusinessEntityID = EMP.BusinessEntityID
+  WHERE 1=1
+  GROUP BY YEAR(SOH.OrderDate), EMP.BusinessEntityID, CONCAT(P.FirstName, ' ', P.LastName)
+  )
+  SELECT 
+	*, 
+	LAG(TotalSales) OVER(PARTITION BY SalesPersonID ORDER BY OrderYear) AS PreviousYearSales, 
+	TotalSales - LAG(TotalSales) OVER(PARTITION BY SalesPersonID ORDER BY OrderYear) AS FromPreviousYearSales
+  FROM SalesByPerson
+  ORDER BY SalesPersonID, OrderYear;
+```
+![alt text](image-2.png)
+
+Q4. 1.Identify customers who have completed their first order and OrderDate <br>
+```
+WITH ORDERS AS 
+(
+SELECT 
+	OrderDate, 
+	CustomerID, 
+	TotalDue, 
+	ShipDate, 
+	ROW_NUMBER() OVER(PARTITION BY CustomerID ORDER BY OrderDate) as OrderNum
+FROM [AdventureWorks2019].[Sales].[SalesOrderHeader] 
+) 
+SELECT 
+	* 
+FROM ORDERS 
+WHERE 1=1
+AND OrderNum = 1;
+```
+![alt text](image-3.png)
+
+Q4. 2. Let's verify! CustomerID = 11001 & OrderDate: 2011-06-21 00:00:00.000
+```
+SELECT 
+	OrderDate, 
+	CustomerID, 
+	TotalDue, 
+	ShipDate, 
+	ROW_NUMBER() OVER(PARTITION BY CustomerID ORDER BY OrderDate ASC) as OrderNum
+FROM [AdventureWorks2019].[Sales].[SalesOrderHeader] 
+WHERE CustomerID = 11001
+ORDER BY OrderDate ASC;
+```
+![alt text](image-4.png)
+Q5. Employees Eligible for Promotion <br>
+```
+SELECT 
+  EMP.BusinessEntityID, 
+  P.FirstName, 
+  P.LastName, 
+  EMP.HireDate,
+  DATEDIFF(year, EMP.HireDate, GETDATE()) AS YearsWithCompany
+FROM 
+   [AdventureWorks2019].[HumanResources].[Employee] AS EMP
+JOIN [AdventureWorks2019].[Person].[Person] AS P 
+  	ON EMP.BusinessEntityID = P.BusinessEntityID
+WHERE 
+  DATEDIFF(year, EMP.HireDate, GETDATE()) > 5;
+```
+![alt text](image-5.png)
+
+Q6. Is there a customer without Order? <br>
+```
+SELECT 
+	CS.CustomerID
+FROM SALES.SalesOrderHeader AS SOH
+LEFT JOIN SALES.Customer AS CS 
+ON CS.CustomerID = SOH.CustomerID
+WHERE SOH.CustomerID IS NULL;
+```
+![alt text](image-6.png)
+
+Nope, there is no customer without an order. 

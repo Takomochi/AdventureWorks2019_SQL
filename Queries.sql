@@ -47,7 +47,7 @@ ORDER BY SUM(SOD.OrderQty * SOD.UnitPrice) DESC;
   FROM SalesByPerson
   ORDER BY SalesPersonID, OrderYear;
 
-  -- 4. Identify customers who have completed their first order and OrderDate. 
+  -- 4.1 Identify customers who have completed their first order and OrderDate. 
 WITH ORDERS AS 
 (
 SELECT 
@@ -64,7 +64,7 @@ FROM ORDERS
 WHERE 1=1
 AND OrderNum = 1;
 
--- Let's verify! CustomerID = 11001 & OrderDate: 2011-06-21 00:00:00.000
+-- 4.2 Let's verify! CustomerID = 11001 & OrderDate: 2011-06-21 00:00:00.000
 SELECT 
 	OrderDate, 
 	CustomerID, 
