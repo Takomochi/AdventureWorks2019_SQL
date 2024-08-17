@@ -1,7 +1,7 @@
 # AdventureWorks2019_SQL
  
 ## Overview of the project
-This project aims to demonstrate basic to advanced SQL queries.
+This project aims to demonstrate basic and advanced SQL queries.
 
 ## Resource
 Microsoft Sample Database - AdventureWorks2019
